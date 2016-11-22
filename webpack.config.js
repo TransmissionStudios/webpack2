@@ -1,8 +1,17 @@
 const path = require('path');
+const webpack = require('webpack');
 const HtmlWebpackPlugin =  require('html-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: [
+    // For HMR
+    'react-hot-loader/patch',
+    'webpack-dev-server/client?http://localhost:8000',
+    'webpack/hot/only-dev-server',
+
+    // App entry point
+    './src/index.js'
+  ],
 
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -14,10 +23,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: 'body',
       template: 'src/index.html'
-    })
+    }),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NamedModulesPlugin()
   ],
 
-  module: {
+    module: {
     rules: [
       {
         test: /\.js$/,
@@ -29,11 +40,11 @@ module.exports = {
     ]
   },
 
+  devtool: 'inline-source-map',
+
   devServer: {
-    contentBase: './src',
-    colors: true,
-    noInfo: true,
-    inline: true,
-    historyApiFallback: true
-  },
+    hot: true,
+    contentBase: path.resolve(__dirname, 'dist'),
+    publicPath: ''
+  }
 };
